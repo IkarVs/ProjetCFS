@@ -1,0 +1,51 @@
+# Étude statistique des accidents de vélo
+## Présentation du jeu de donnée :  // ne pas oublier de vérifier l'orthographe.
+Nous avons choisi un jeu de données portant sur les accidents de vélos en France. Les accidents répertoriés sont ceux survenus sur la voie publique et impliquant au moins un vélo sur la période de 2005 à 2021. Ce jeu de donnée compte 74 490 accidents. 
+Nous avons choisi d'étudié les accidents survenues en fonctions de l'âge de la personne à vélo mais aussi le nombre d'accident en fonction de la largeur de la chaussée affectée à la circulation du sens de l'accident.
+
+
+## Chargement des données
+
+```{r}
+# Charger les packages nécessaires
+library(tidyverse)
+
+# Charger le jeu de données
+accidents <- read_csv("accidents-velos.csv")
+
+# Appliquer la transformation de l'âge en extrayant le premier chiffre de la plage
+accidents$age <- as.integer(sub("([0-9]+)-[0-9]+", "\\1", accidents$age))
+
+
+# Vérifier les premières lignes du jeu de données avec la colonne "age" transformée
+head(accidents)
+
+
+
+```
+## Aperçu des données
+# Afficher les premières lignes du jeu de données
+```{r}
+head(accidents)
+```
+#Analyse de l'âge et les chances d'avoir un accident
+
+# Créer un graphique en nuage de points pour visualiser la relation entre l'âge et les chances d'avoir un accident
+```{r}
+# Filtrer les accidents où l'âge n'est pas renseigné
+accidents_age <- accidents[!is.na(accidents$age), ]
+
+# Extraction du premier chiffre de la plage d'âge
+accidents_age$age <- as.integer(gsub("\\[([0-9]+)-[0-9]+\\]", "\\1", accidents_age$age))
+
+# Agréger les incidents par âge
+incidents_age <- accidents_age %>% 
+  group_by(age) %>% 
+  summarise(total_incidents = n())
+
+# Créer un diagramme en barres pour représenter la somme des incidents en fonction de l'âge
+ggplot(incidents_age, aes(x = age, y = total_incidents)) +
+  geom_bar(stat = "identity", fill = "blue") +
+  labs(x = "Âge", y = "Total des incidents", title = "Somme des incidents en fonction de l'âge")
+```
+
